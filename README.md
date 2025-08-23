@@ -1,4 +1,11 @@
+## Autor
+### Estudiante: Daniel Andres Angulo Perez
+
+## [@DanielAngul0](https://github.com/DanielAngul0)
+
 # Taller #4 de Arquitectura de Software: Microservicios
+
+# 6. Sistema de Reservas de Vuelos
 
 Este proyecto proporciona una plantilla para la implementación de un sistema con arquitectura de Microservicios, utilizando Python y Contenedores.
 
