@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 # Importa la base declarativa desde models.py
-from .models import Base
+from models import Base
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 

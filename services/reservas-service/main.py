@@ -1,6 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException
-from .database_mongo import get_reservas_collection, get_preferencias_collection
-from .models import Reserva, PreferenciasUsuario
+from database_mongo import get_reservas_collection, get_preferencias_collection
+from models import Reserva, PreferenciasUsuario
 from typing import List
 from bson import ObjectId
 

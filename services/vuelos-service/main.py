@@ -1,6 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException
 import os
-from .database_sql import create_db_and_tables
+from database_sql import create_db_and_tables
 
 # TODO: Importar el módulo de base de datos y los modelos
 # from .database import [tu_motor_de_base_de_datos]
