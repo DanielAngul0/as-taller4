@@ -1,12 +1,11 @@
 from sqlalchemy import Column, Integer, String, Numeric, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
-
 from pydantic import BaseModel
+from typing import Optional
 
 Base = declarative_base()
 
-# Modelo SQLAlchemy para la tabla 'pagos'
 class Pago(Base):
     __tablename__ = "pagos"
 
@@ -19,7 +18,7 @@ class Pago(Base):
     fecha_pago = Column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"<Pago(id={self.id}, usuario_id={self.usuario_id}, monto={self.monto}, estado='{self.estado}')>"
+        return f"<Pago(id={self.id}, usuario_id={self.usuario_id}, monto={self.monto})>"
 
 # Modelos Pydantic
 class PagoBase(BaseModel):
@@ -27,7 +26,7 @@ class PagoBase(BaseModel):
     reserva_id: int
     monto: float
     metodo_pago: str
-    estado: str = 'pendiente'
+    estado: Optional[str] = "pendiente"
 
 class PagoCreate(PagoBase):
     pass

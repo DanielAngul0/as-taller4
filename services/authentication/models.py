@@ -1,14 +1,11 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
-
 from pydantic import BaseModel
 from typing import Optional
 
-# Base declarativa para SQLAlchemy
 Base = declarative_base()
 
-# Modelo de SQLAlchemy para la tabla 'usuarios'
 class Usuario(Base):
     __tablename__ = "usuarios"
 
@@ -21,17 +18,18 @@ class Usuario(Base):
     def __repr__(self):
         return f"<Usuario(id={self.id}, nombre='{self.nombre}', email='{self.email}')>"
 
-# Modelos Pydantic para validación en FastAPI
+# Modelos Pydantic
 class UsuarioBase(BaseModel):
     nombre: str
     email: str
+    password: str
 
 class UsuarioCreate(UsuarioBase):
-    password: str
+    pass
 
 class UsuarioRead(UsuarioBase):
     id: int
     fecha_registro: datetime
 
     class Config:
-        orm_mode = True  # Permite compatibilidad con ORM
+        orm_mode = True

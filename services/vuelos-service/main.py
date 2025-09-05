@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException
 import os
+from .database_sql import create_db_and_tables
 
 # TODO: Importar el módulo de base de datos y los modelos
 # from .database import [tu_motor_de_base_de_datos]
@@ -9,6 +10,9 @@ import os
 # DATABASE_URL = os.getenv("DATABASE_URL")
 
 app = FastAPI()
+
+# Crear las tablas si no existen
+create_db_and_tables()
 
 # TODO: Crea una instancia del router para organizar los endpoints
 router = APIRouter()
@@ -20,7 +24,6 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    """Endpoint de salud para verificar el estado del servicio."""
     return {"status": "ok"}
 
 # TODO: Implementa los endpoints de tu microservicio aquí
