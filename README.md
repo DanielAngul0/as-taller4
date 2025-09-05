@@ -9,6 +9,64 @@
 
 Este proyecto proporciona una plantilla para la implementación de un sistema con arquitectura de Microservicios, utilizando Python y Contenedores.
 
+## Estructura del Proyecto
+
+```
+as-taller4/
+├── .env.example
+├── .gitignore
+├── README.md
+├── docker-compose.yml
+├── api-gateway/
+│   ├── Dockerfile
+│   ├── main.py
+│   └── requirements.txt
+├── common/
+│   ├── config.py
+│   └── helpers/
+│       └── utils.py
+├── docs/
+│   └── TEMAS.md
+├── frontend/
+│   ├── Dockerfile
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── static/
+│   │   └── style.css
+│   └── templates/
+│       ├── base.html
+│       ├── form.html
+│       └── index.html
+└── services/
+    ├── authentication/
+    │   ├── Dockerfile
+    │   ├── main.py
+    │   ├── requirements.txt
+    │   └── schema.sql
+    ├── vuelos-service/
+    │   ├── database_mongo.py
+    │   ├── database_redis.py
+    │   ├── database_sql.py
+    │   ├── Dockerfile
+    │   ├── main.py
+    │   ├── models.
+    │   ├── requirements.txt
+    │   └── schema.sql
+    ├── pagos-service/
+    │   ├── Dockerfile
+    │   ├── main.py
+    │   ├── models.py
+    │   ├── requirements.txt 
+    │   └── schema.sql
+    └── reservas-service/
+        ├── Dockerfile
+        ├── init.js
+        ├── main.py
+        ├── models.py
+        ├── mongo_collections.md  
+        └── requirements.txt
+```
+
 ## Objetivos del Taller
 
 * Diseñar microservicios independientes que se comunican entre sí.
