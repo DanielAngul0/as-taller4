@@ -25,11 +25,12 @@ router = APIRouter(prefix="/api/v1")
 # Definición de servicios
 # ===========================
 SERVICES = {
-    "auth": os.getenv("AUTH_SERVICE_URL", "http://auth-service:8001/auth"),
-    "vuelos": os.getenv("VUELOS_SERVICE_URL", "http://vuelos-service:8002/vuelos"),
-    "reservas": os.getenv("RESERVAS_SERVICE_URL", "http://reservas-service:8003/reservas"),
-    "pagos": os.getenv("PAGOS_SERVICE_URL", "http://pagos-service:8004/pagos"),
+    "auth": os.getenv("AUTH_SERVICE_URL", "http://auth-service:8001/api/v1/auth"),
+    "vuelos": os.getenv("VUELOS_SERVICE_URL", "http://vuelos-service:8002/api/v1/vuelos"),
+    "reservas": os.getenv("RESERVAS_SERVICE_URL", "http://reservas-service:8003/api/v1/reservas"),
+    "pagos": os.getenv("PAGOS_SERVICE_URL", "http://pagos-service:8004/api/v1/pagos"),
 }
+
 
 def proxy_response(r: requests.Response) -> Response:
     # Reenviar status, cuerpo y content-type del servicio destino

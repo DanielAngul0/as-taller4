@@ -15,11 +15,14 @@ CREATE TABLE vuelos (
     fecha_salida TIMESTAMP NOT NULL,
     fecha_llegada TIMESTAMP NOT NULL,
     aeronave VARCHAR(50),
+    precio NUMERIC(10,2) NOT NULL CHECK (precio >= 0),
     asientos_disponibles INT NOT NULL CHECK (asientos_disponibles >= 0)
 );
 
--- Datos de prueba
-INSERT INTO vuelos (aerolinea, origen, destino, fecha_salida, fecha_llegada, aeronave, asientos_disponibles) VALUES
-('Aerolinea X', 'Bogotá', 'Medellín', '2025-09-10 08:00:00', '2025-09-10 09:00:00', 'Airbus A320', 50),
-('Aerolinea X', 'Medellín', 'Cartagena', '2025-09-11 10:00:00', '2025-09-11 11:30:00', 'Boeing 737', 30),
-('Aerolinea Y', 'Bogotá', 'Miami', '2025-09-12 15:00:00', '2025-09-12 19:00:00', 'Airbus A330', 100);
+-- ===========================
+-- DATOS DE PRUEBA
+-- ===========================
+INSERT INTO vuelos (aerolinea, origen, destino, fecha_salida, fecha_llegada, aeronave, precio, asientos_disponibles) VALUES
+('Aerolinea X', 'Bogotá', 'Medellín', '2025-09-10 08:00:00', '2025-09-10 09:00:00', 'Airbus A320', 250000, 50),
+('Aerolinea X', 'Medellín', 'Cartagena', '2025-09-11 10:00:00', '2025-09-11 11:30:00', 'Boeing 737', 300000, 30),
+('Aerolinea Y', 'Bogotá', 'Miami', '2025-09-12 15:00:00', '2025-09-12 19:00:00', 'Airbus A330', 1200000, 100);

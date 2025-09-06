@@ -33,7 +33,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://user:password@auth-db:5432/auth_db
     depends_on:
-      - auth-db
+      auth-db:
+        condition: service_healthy
 
   auth-db:
     image: postgres:latest
@@ -47,6 +48,11 @@ services:
     volumes:
       - auth_data:/var/lib/postgresql/data
       - ./services/authentication/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d auth_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # --- VUELOS ---
   vuelos-service:
@@ -57,7 +63,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://user:password@vuelos-db:5432/vuelos_db
     depends_on:
-      - vuelos-db
+      vuelos-db:
+        condition: service_healthy
 
   vuelos-db:
     image: postgres:latest
@@ -71,6 +78,11 @@ services:
     volumes:
       - vuelos_data:/var/lib/postgresql/data
       - ./services/vuelos-service/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d vuelos_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # --- RESERVAS ---
   reservas-service:
@@ -81,7 +93,8 @@ services:
     environment:
       - DATABASE_URL=mongodb://reservas-db:27017/reservas_db
     depends_on:
-      - reservas-db
+      reservas-db:
+        condition: service_healthy
 
   reservas-db:
     image: mongo:latest
@@ -91,6 +104,11 @@ services:
     volumes:
       - reservas_data:/data/db
       - ./services/reservas-service/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # --- PAGOS ---
   pagos-service:
@@ -101,7 +119,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://user:password@pagos-db:5432/pagos_db
     depends_on:
-      - pagos-db
+      pagos-db:
+        condition: service_healthy
 
   pagos-db:
     image: postgres:latest
@@ -115,6 +134,11 @@ services:
     volumes:
       - pagos_data:/var/lib/postgresql/data
       - ./services/pagos-service/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d pagos_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   auth_data:
