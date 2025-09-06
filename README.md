@@ -15,8 +15,8 @@ Este proyecto proporciona una plantilla para la implementación de un sistema co
 as-taller4/
 ├── .env.example
 ├── .gitignore
-├── README.md
 ├── docker-compose.yml
+├── README.md
 ├── api-gateway/
 │   ├── Dockerfile
 │   ├── main.py
@@ -28,8 +28,8 @@ as-taller4/
 ├── docs/
 │   └── TEMAS.md
 ├── frontend/
-│   ├── Dockerfile
 │   ├── app.py
+│   ├── Dockerfile
 │   ├── requirements.txt
 │   ├── static/
 │   │   └── style.css
@@ -39,32 +39,42 @@ as-taller4/
 │       └── index.html
 └── services/
     ├── authentication/
-    │   ├── Dockerfile
-    │   ├── main.py
-    │   ├── requirements.txt
-    │   └── schema.sql
-    ├── vuelos-service/
-    │   ├── database_mongo.py
-    │   ├── database_redis.py
+    │   ├── __init__.py
     │   ├── database_sql.py
     │   ├── Dockerfile
     │   ├── main.py
-    │   ├── models.
+    │   ├── models.py
     │   ├── requirements.txt
-    │   └── schema.sql
+    │   ├── schema.sql
+    │   └── routers/
+    │       └── auth.py 
     ├── pagos-service/
+    │   ├── __init__.py
+    │   ├── database_sql.py
     │   ├── Dockerfile
     │   ├── main.py
     │   ├── models.py
     │   ├── requirements.txt 
     │   └── schema.sql
-    └── reservas-service/
+    ├── reservas-service/
+    |     ├── __init__.py
+    |     ├── database_mongo.py        
+    |     ├── Dockerfile
+    |     ├── init.js
+    |     ├── main.py
+    |     ├── models.py
+    |     ├── mongo_collections.md  
+    |     └── requirements.txt
+    └── vuelos-service/
+        ├── __init__.py
+        ├── database_mongo.py
+        ├── database_redis.py
+        ├── database_sql.py
         ├── Dockerfile
-        ├── init.js
         ├── main.py
-        ├── models.py
-        ├── mongo_collections.md  
-        └── requirements.txt
+        ├── models.
+        ├── requirements.txt
+        └── schema.sql
 ```
 
 ## Objetivos del Taller

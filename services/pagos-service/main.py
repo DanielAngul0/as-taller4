@@ -1,23 +1,19 @@
-from fastapi import FastAPI, APIRouter, HTTPException
-from database_sql import create_db_and_tables
-import os
-
-# TODO: Importar el módulo de base de datos y los modelos
-# from .database import [tu_motor_de_base_de_datos]
-# from .models import [tus_modelos]
-
-# TODO: Configurar la URL de la base de datos desde las variables de entorno
-# DATABASE_URL = os.getenv("DATABASE_URL")
+# services/pagos-service/main.py
+from fastapi import FastAPI, APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+from typing import List
+from database_sql import create_db_and_tables, get_db
+from models import Pago, PagoCreate, PagoRead
 
 app = FastAPI()
-
-# Crear tablas si no existen
-create_db_and_tables()
-
-# TODO: Crea una instancia del router para organizar los endpoints
 router = APIRouter()
 
-# TODO: Define un endpoint raíz o de salud para verificar que el servicio está funcionando
+# Crear tablas al iniciar
+create_db_and_tables()
+
+# ==========================
+# Endpoints de Salud
+# ==========================
 @app.get("/")
 def read_root():
     return {"message": "Servicio de pagos en funcionamiento."}
@@ -26,20 +22,68 @@ def read_root():
 def health_check():
     return {"status": "ok"}
 
-# TODO: Implementa los endpoints de tu microservicio aquí
-# Ejemplo de un endpoint GET:
-# @router.get("/[ruta_del_recurso]/")
-# async def get_[recurso]():
-#     # TODO: Agrega la lógica de tu negocio aquí
-#     return {"data": "Aquí van tus datos."}
+# ==========================
+# Endpoints CRUD de Pagos
+# ==========================
 
-# Ejemplo de un endpoint POST:
-# @router.post("/[ruta_del_recurso]/")
-# async def create_[recurso](item: [tu_modelo_pydantic]):
-#     # TODO: Agrega la lógica para crear un nuevo recurso
-#     return {"message": "[recurso] creado exitosamente."}
+# Listar todos los pagos
+@router.get("/pagos/", response_model=List[PagoRead])
+def list_pagos(db: Session = Depends(get_db)):
+    pagos = db.query(Pago).all()
+    return pagos
 
+# Obtener un pago por ID
+@router.get("/pagos/{pago_id}", response_model=PagoRead)
+def get_pago(pago_id: int, db: Session = Depends(get_db)):
+    pago = db.query(Pago).filter(Pago.id == pago_id).first()
+    if not pago:
+        raise HTTPException(status_code=404, detail="Pago no encontrado")
+    return pago
 
-# TODO: Incluir el router en la aplicación principal
-# app.include_router(router, prefix="/api/v1")
+# Crear un nuevo pago
+@router.post("/pagos/", response_model=PagoRead)
+def create_pago(pago: PagoCreate, db: Session = Depends(get_db)):
+    nuevo_pago = Pago(
+        usuario_id=pago.usuario_id,
+        reserva_id=pago.reserva_id,
+        monto=pago.monto,
+        metodo_pago=pago.metodo_pago,
+        estado=pago.estado
+    )
+    db.add(nuevo_pago)
+    db.commit()
+    db.refresh(nuevo_pago)
+    return nuevo_pago
 
+# Actualizar un pago
+@router.put("/pagos/{pago_id}", response_model=PagoRead)
+def update_pago(pago_id: int, pago: PagoCreate, db: Session = Depends(get_db)):
+    pago_db = db.query(Pago).filter(Pago.id == pago_id).first()
+    if not pago_db:
+        raise HTTPException(status_code=404, detail="Pago no encontrado")
+
+    pago_db.usuario_id = pago.usuario_id
+    pago_db.reserva_id = pago.reserva_id
+    pago_db.monto = pago.monto
+    pago_db.metodo_pago = pago.metodo_pago
+    pago_db.estado = pago.estado
+
+    db.commit()
+    db.refresh(pago_db)
+    return pago_db
+
+# Eliminar un pago
+@router.delete("/pagos/{pago_id}")
+def delete_pago(pago_id: int, db: Session = Depends(get_db)):
+    pago = db.query(Pago).filter(Pago.id == pago_id).first()
+    if not pago:
+        raise HTTPException(status_code=404, detail="Pago no encontrado")
+
+    db.delete(pago)
+    db.commit()
+    return {"message": "Pago eliminado correctamente"}
+
+# ==========================
+# Incluir router en la app
+# ==========================
+app.include_router(router, prefix="/api/v1")
