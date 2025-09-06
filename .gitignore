@@ -208,3 +208,6 @@ __marimo__/
 
 # Ignorar verificacion de la base de datos
 databases_verificacion.md
+
+# Ignporar verificacion con la base de datos MongoDB
+Mongo_DB_Test.py

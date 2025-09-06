@@ -11,6 +11,7 @@ class HistorialAccion(BaseModel):
     fecha: datetime
 
 class Reserva(BaseModel):
+    id: Optional[str] = None
     usuario_id: int
     vuelo_id: int
     estado: str = "pendiente"  # pendiente, pagado, cancelado

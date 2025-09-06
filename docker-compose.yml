@@ -100,7 +100,7 @@ services:
     image: mongo:latest
     container_name: reservas-db
     ports:
-      - "27018:27017"
+      - "27017:27017"
     volumes:
       - reservas_data:/data/db
       - ./services/reservas-service/init.js:/docker-entrypoint-initdb.d/init.js:ro
