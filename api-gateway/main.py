@@ -1,13 +1,15 @@
 from fastapi import FastAPI, APIRouter, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import Response
 import requests
 import os
 
-# Define la instancia de la aplicación FastAPI.
+# ===========================
+# Inicialización de la app
+# ===========================
 app = FastAPI(title="API Gateway Taller Microservicios")
 
-# Configura CORS (Cross-Origin Resource Sharing).
-# Esto es esencial para permitir que el frontend se comunique con el gateway.
+# Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Permite peticiones desde cualquier origen (ajustar en producción)
@@ -19,54 +21,79 @@ app.add_middleware(
 # Crea un enrutador para las peticiones de los microservicios.
 router = APIRouter(prefix="/api/v1")
 
-# Define los microservicios y sus URLs.
-# La URL debe coincidir con el nombre del servicio definido en docker-compose.yml.
-# El puerto debe ser el del contenedor (ej. auth-service:8001).
+# ===========================
+# Definición de servicios
+# ===========================
 SERVICES = {
-    "auth": os.getenv("AUTH_SERVICE_URL", "http://auth-service:8001"),
-    "vuelos": os.getenv("VUELOS_SERVICE_URL", "http://vuelos-service:8002"),
-    "reservas": os.getenv("RESERVAS_SERVICE_URL", "http://reservas-service:8003"),
-    "pagos": os.getenv("PAGOS_SERVICE_URL", "http://pagos-service:8004"),
+    "auth": os.getenv("AUTH_SERVICE_URL", "http://auth-service:8001/auth"),
+    "vuelos": os.getenv("VUELOS_SERVICE_URL", "http://vuelos-service:8002/vuelos"),
+    "reservas": os.getenv("RESERVAS_SERVICE_URL", "http://reservas-service:8003/reservas"),
+    "pagos": os.getenv("PAGOS_SERVICE_URL", "http://pagos-service:8004/pagos"),
 }
 
-# TODO: Implementa una ruta genérica para redirigir peticiones GET.
+def proxy_response(r: requests.Response) -> Response:
+    # Reenviar status, cuerpo y content-type del servicio destino
+    return Response(
+        content=r.content,
+        status_code=r.status_code,
+        media_type=r.headers.get("content-type", "application/json")
+    )
+
+# ===========================
+# Rutas para reenviar peticiones a los microservicios.
+# ===========================
+
+# GET
 @router.get("/{service_name}/{path:path}")
 async def forward_get(service_name: str, path: str, request: Request):
     if service_name not in SERVICES:
         raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found.")
-    
-    service_url = f"{SERVICES[service_name]}/{path}"
-    
     try:
-        response = requests.get(service_url, params=request.query_params)
-        response.raise_for_status()
-        return response.json()
+        r = requests.get(f"{SERVICES[service_name]}/{path}", params=request.query_params)
+        return proxy_response(r)
     except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Error forwarding request to {service_name}: {e}")
+        raise HTTPException(status_code=502, detail=f"Upstream {service_name} error: {e}")
 
-# TODO: Implementa una ruta genérica para redirigir peticiones POST.
+# POST
 @router.post("/{service_name}/{path:path}")
 async def forward_post(service_name: str, path: str, request: Request):
     if service_name not in SERVICES:
         raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found.")
-    
-    service_url = f"{SERVICES[service_name]}/{path}"
-    
     try:
-        # Pasa los datos JSON del cuerpo de la petición.
-        response = requests.post(service_url, json=await request.json())
-        response.raise_for_status()
-        return response.json()
+        r = requests.post(f"{SERVICES[service_name]}/{path}", json=await request.json())
+        return proxy_response(r)
     except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Error forwarding request to {service_name}: {e}")
+        raise HTTPException(status_code=502, detail=f"Upstream {service_name} error: {e}")
 
-# TODO: Agrega más rutas para otros métodos HTTP (PUT, DELETE, etc.).
+# PUT
+@router.put("/{service_name}/{path:path}")
+async def forward_put(service_name: str, path: str, request: Request):
+    if service_name not in SERVICES:
+        raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found.")
+    try:
+        r = requests.put(f"{SERVICES[service_name]}/{path}", json=await request.json())
+        return proxy_response(r)
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Upstream {service_name} error: {e}")
 
-# Incluye el router en la aplicación principal.
+# DELETE
+@router.delete("/{service_name}/{path:path}")
+async def forward_delete(service_name: str, path: str):
+    if service_name not in SERVICES:
+        raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found.")
+    try:
+        r = requests.delete(f"{SERVICES[service_name]}/{path}")
+        return proxy_response(r)
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Upstream {service_name} error: {e}")
+
+# ===========================
+# Registro del router
+# ===========================
 app.include_router(router)
 
-# Endpoint de salud para verificar el estado del gateway.
+# Health check
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "message": "API Gateway is running."}
+    return {"status": "ok", "message": "La API Gateway está funcionando correctamente."}
 

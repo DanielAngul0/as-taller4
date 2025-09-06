@@ -13,23 +13,38 @@ class Usuario(Base):
     nombre = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
     password = Column(String(200), nullable=False)
+    role = Column(String(50), nullable=False, default="user")
     fecha_registro = Column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"<Usuario(id={self.id}, nombre='{self.nombre}', email='{self.email}')>"
+        return f"<Usuario(id={self.id}, nombre='{self.nombre}', email='{self.email}', role='{self.role}')>"
 
-# Modelos Pydantic
+
+# ===========================
+# Pydantic Models
+# ===========================
+
 class UsuarioBase(BaseModel):
     nombre: str
     email: str
-    password: str
+
 
 class UsuarioCreate(UsuarioBase):
-    pass
+    password: str
+    role: str = "user"   # 👈 valor por defecto
 
-class UsuarioRead(UsuarioBase):
+
+class UsuarioRead(BaseModel):
     id: int
+    nombre: str
+    email: str
+    role: str
     fecha_registro: datetime
 
     class Config:
         orm_mode = True
+
+
+class UsuarioLogin(BaseModel):
+    email: str
+    password: str
